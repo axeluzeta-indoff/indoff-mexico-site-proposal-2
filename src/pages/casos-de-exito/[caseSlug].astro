@@ -1,0 +1,228 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { CASES_SUCCESS, getCaseBySlug } from "../../data/casesSuccess";
+
+export function getStaticPaths() {
+  return CASES_SUCCESS.map((c) => ({
+    params: { caseSlug: c.slug },
+    props: { c },
+  }));
+}
+
+const { c } = Astro.props;
+
+// fallback defensivo
+const current =
+  c ?? getCaseBySlug(Astro.params.caseSlug ?? "") ?? CASES_SUCCESS[0];
+
+const title = `${current.title} | Casos de éxito`;
+const description = current.summary;
+---
+
+<MainLayout title={title} description={description}>
+  <section class="bg-white text-gray-900">
+    <div class="mx-auto max-w-7xl px-6 py-14">
+      <!-- Breadcrumb -->
+      <div class="mb-8 text-sm text-gray-600">
+        <a href="/#casos-exito" class="font-semibold text-[#169061] hover:underline">
+          ← Volver a casos de éxito
+        </a>
+      </div>
+
+      <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
+                <!-- Hero image -->
+        <div class="overflow-hidden rounded-[28px] bg-[#d9d7cf] p-6 shadow-sm ring-1 ring-black/5">
+          <div class="overflow-hidden rounded-[22px] bg-gray-200">
+            <div class="aspect-4/5 w-full">
+              <img
+                id="caseMainImg"
+                src={current.heroImage}
+                alt={current.heroAlt}
+                class="h-full w-full cursor-zoom-in object-cover"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Content -->
+        <div>
+          <div class="inline-flex rounded-full bg-[#EEC028] px-3 py-1 text-sm font-bold text-gray-900">
+            {current.tag}
+          </div>
+
+          <h1 class="mt-4 text-5xl font-extrabold tracking-tight text-[#169061]">
+            {current.title}
+          </h1>
+
+          <p class="mt-4 text-lg text-gray-700">
+            {current.summary}
+          </p>
+
+          <div class="mt-8 rounded-[22px] bg-[#d9d7cf] p-6 ring-1 ring-black/5">
+            <p class="text-sm font-extrabold text-gray-900">Resultados clave</p>
+            <ul class="mt-4 space-y-2 text-gray-800">
+              {current.bullets.map((b) => (
+                <li class="flex items-start gap-2">
+                  <span class="mt-2 h-2 w-2 rounded-full bg-[#169061]"></span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="mt-8 space-y-6 text-gray-800 leading-relaxed">
+            {current.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+
+          <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/#contacto"
+              class="inline-flex items-center justify-center rounded-xl bg-[#169061] px-8 py-4 text-lg font-extrabold text-white transition hover:bg-[#137e55]"
+            >
+              Hablar con un experto
+            </a>
+
+            <a
+              href="/#catalogo"
+              class="inline-flex items-center justify-center rounded-xl bg-[#d9d7cf] px-8 py-4 text-lg font-extrabold text-gray-900 transition hover:opacity-90"
+            >
+              Descargar catálogo
+            </a>
+          </div>
+        </div>
+      </div>
+
+                  <!-- Gallery (swap + modal opcional) -->
+      {current.gallery?.length ? (
+        <div class="mt-16">
+          <h2 class="text-3xl font-extrabold tracking-tight text-gray-900">
+            Galería
+          </h2>
+
+          <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {current.gallery.map((g, idx) => (
+              <button
+                type="button"
+                class="group relative overflow-hidden rounded-[22px] bg-gray-200 ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-[#169061]"
+                data-thumb
+                data-src={g.src}
+                data-alt={g.alt}
+                aria-label={`Ver imagen ${idx + 1}`}
+              >
+                <div class="aspect-4/3 w-full">
+                  <img
+                    src={g.src}
+                    alt={g.alt}
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    draggable="false"
+                  />
+                </div>
+
+                <div class="pointer-events-none absolute inset-0 bg-black/0 transition group-hover:bg-black/15"></div>
+              </button>
+            ))}
+          </div>
+
+          <!-- Modal -->
+          <div
+            id="galleryModal"
+            class="fixed inset-0 z-999 hidden items-center justify-center bg-black/70 p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Imagen ampliada"
+          >
+            <button
+              id="galleryClose"
+              type="button"
+              class="absolute right-6 top-6 rounded-full bg-white/90 px-4 py-2 text-sm font-extrabold text-gray-900 hover:bg-white"
+            >
+              Cerrar ✕
+            </button>
+
+            <div class="w-full max-w-5xl">
+              <img
+                id="galleryModalImg"
+                src=""
+                alt=""
+                class="mx-auto max-h-[80vh] w-auto max-w-full rounded-[22px] bg-white object-contain shadow-2xl"
+              />
+              <p id="galleryModalAlt" class="mt-4 text-center text-white/90"></p>
+            </div>
+          </div>
+
+          <script is:inline>
+            (() => {
+              const mainImg = document.getElementById("caseMainImg");
+              const thumbs = Array.from(document.querySelectorAll("[data-thumb]"));
+
+              const modal = document.getElementById("galleryModal");
+              const closeBtn = document.getElementById("galleryClose");
+              const modalImg = document.getElementById("galleryModalImg");
+              const modalAlt = document.getElementById("galleryModalAlt");
+
+              if (!mainImg || !thumbs.length) return;
+
+              // Swap tipo Amazon
+              const setMain = (src, alt) => {
+                mainImg.src = src;
+                mainImg.alt = alt || "";
+                // cache-bust suave para que el navegador re-renderice sin parpadeos raros
+                mainImg.setAttribute("data-current", src);
+              };
+
+              thumbs.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                  const src = btn.dataset.src;
+                  const alt = btn.dataset.alt || "";
+                  if (src) setMain(src, alt);
+
+                  // marca visual “seleccionado”
+                  thumbs.forEach((b) => b.classList.remove("ring-2", "ring-[#169061]"));
+                  btn.classList.add("ring-2", "ring-[#169061]");
+                });
+              });
+
+              // Modal al click del hero (opcional, estilo zoom)
+              if (modal && closeBtn && modalImg && modalAlt) {
+                const openModal = () => {
+                  modalImg.src = mainImg.src;
+                  modalImg.alt = mainImg.alt || "";
+                  modalAlt.textContent = mainImg.alt || "";
+                  modal.classList.remove("hidden");
+                  modal.classList.add("flex");
+                  document.body.style.overflow = "hidden";
+                };
+
+                const closeModal = () => {
+                  modal.classList.add("hidden");
+                  modal.classList.remove("flex");
+                  modalImg.src = "";
+                  modalImg.alt = "";
+                  modalAlt.textContent = "";
+                  document.body.style.overflow = "";
+                };
+
+                mainImg.addEventListener("click", openModal);
+                closeBtn.addEventListener("click", closeModal);
+
+                modal.addEventListener("click", (e) => {
+                  if (e.target === modal) closeModal();
+                });
+
+                window.addEventListener("keydown", (e) => {
+                  if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
+                });
+              }
+            })();
+          </script>
+        </div>
+      ) : null}
+    </div>
+  </section>
+</MainLayout>

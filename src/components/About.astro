@@ -1,106 +1,113 @@
-<section id="nosotros" data-animate="right" class="bg-white text-gray-900">
+<section
+  id="nosotros"
+  data-animate="right"
+  class="bg-white text-gray-900"
+>
   <div class="mx-auto max-w-7xl px-6 py-20">
-    <h2 class="text-center text-5xl font-extrabold tracking-tight text-[#169061]">
-      Nosotros
-    </h2>
 
-    <div class="mt-14 grid gap-12 lg:grid-cols-2 lg:items-start">
-      <!-- Columna izquierda -->
-      <div>
-        <h3 class="text-2xl font-extrabold text-[#169061]">
-          Nos caracterizamos por
-        </h3>
+    <!-- Header -->
+    <div class="mx-auto max-w-4xl text-center">
+      <h2 class="text-4xl font-extrabold tracking-tight text-[#169061] md:text-5xl">
+        Expertos en Manejo de Materiales
+      </h2>
+      <p class="mt-6 text-lg text-gray-700">
+        Con más de 31 años en México, nos especializamos en la implementación
+        de proyectos de integración de ingeniería en el área de manejo de materiales.
+      </p>
+    </div>
 
-        <ul class="mt-6 space-y-3 text-lg text-gray-900">
-            <li class="flex items-start gap-3">
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="mt-1 h-5 w-5 text-[#169061]"
-                aria-hidden="true"
-                >
-                <path d="M20 6 9 17l-5-5" />
-                </svg>
-                <span>Eficacia en solución de problemas</span>
-            </li>
+    <!-- Grid principal -->
+    <div class="mt-16 grid gap-12 lg:grid-cols-2">
 
-            <li class="flex items-start gap-3">
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="mt-1 h-5 w-5 text-[#169061]"
-                aria-hidden="true"
-                >
-                <path d="M20 6 9 17l-5-5" />
-                </svg>
-                <span>Financiamiento con empresas estables</span>
-            </li>
+      <!-- Columna izquierda: Misión / Visión -->
+      <div class="rounded-3xl bg-[#d9d7cf] p-10">
+        <div class="space-y-10">
 
-            <li class="flex items-start gap-3">
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="mt-1 h-5 w-5 text-[#169061]"
-                aria-hidden="true"
-                >
-                <path d="M20 6 9 17l-5-5" />
-                </svg>
-                <span>Comunicación efectiva y asertiva</span>
-            </li>
-        </ul>
-
-        <!-- Card Misión/Visión -->
-        <div class="mt-10 rounded-[34px] bg-[#d9d7cf] p-10">
           <div>
-            <p class="text-2xl font-extrabold text-[#169061]">
-              MISIÓN
-            </p>
-            <p class="mt-3 text-lg leading-relaxed text-gray-900">
-              Mantener un alto nivel de tecnología actual y futura para una distribución
-              eficiente de las soluciones de producción y almacenamiento, así como para
-              políticas de reducción de costes.
+            <h3 class="text-xl font-extrabold text-[#169061]">MISIÓN</h3>
+            <p class="mt-5 text-[17px] leading-relaxed text-gray-900/95">
+              Impulsar la productividad de nuestros clientes incorporando tecnologías
+              actuales y emergentes, creando soluciones eficientes para la producción
+              y el almacenamiento, y desarrollando estrategias que optimicen recursos
+              y reduzcan costos de manera sostenible.
             </p>
           </div>
 
-          <div class="mt-10">
-            <p class="text-2xl font-extrabold text-[#169061]">
-              VISIÓN
-            </p>
-            <p class="mt-3 text-lg leading-relaxed text-gray-900">
-              Servicio personalizado y profesional a cargo de ingenieros locales conectados
-              globalmente con la cadena de suministro. Soluciones precisas y puntuales a
-              precios razonables.
+          <div>
+            <h3 class="text-xl font-extrabold text-[#169061]">VISIÓN</h3>
+            <p class="mt-5 text-[17px] leading-relaxed text-gray-900/95">
+              Ser el aliado estratégico que brinda un servicio profesional y cercano,
+              a través de ingenieros locales conectados globalmente con la cadena de
+              suministro. Entregar soluciones precisas, confiables y a tiempo, con
+              una propuesta de valor justa y competitiva.
             </p>
           </div>
+
         </div>
       </div>
 
-      <!-- Columna derecha (foto) -->
-        <div class="overflow-hidden rounded-[34px] bg-gray-200">
-        <div class="aspect-4/3 w-full">
-            <img
-            src="/images/about/about-team.jpg"
-            alt="Equipo Indoff México"
-            class="h-full w-full object-cover"
-            loading="lazy"
-            />
+      <!-- Columna derecha -->
+      <div class="flex flex-col gap-10">
+
+        <!-- Características -->
+        <div>
+          <h3 class="text-xl font-extrabold text-[#169061]">
+            Nos caracterizamos por
+          </h3>
+
+          <ul class="mt-6 space-y-4">
+            {[
+              "Eficacia en solución de problemas",
+              "Financiamiento con empresas estables",
+              "Comunicación efectiva y asertiva",
+            ].map((item) => (
+              <li class="flex items-start gap-3 text-gray-900">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="mt-1 h-5 w-5 text-[#169061]"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <!-- Caja amarilla -->
+        <div class="rounded-3xl bg-[#EEC028] p-10 text-center">
+          <p class="text-lg font-medium text-gray-900">
+            Ofrecemos <strong>esquemas de arrendamiento</strong> para optimizar
+            inversiones en equipamiento y selección.
+          </p>
+
+          <p class="mt-6 text-3xl font-black tracking-tight text-gray-900">
+            Crédito a 30, 60 y hasta 90 días
+          </p>
+
+          <p class="mt-4 text-gray-900">
+            Nos adaptamos a la complejidad de tu proyecto para facilitar
+            tu crecimiento sin afectar tu flujo de efectivo.
+          </p>
         </div>
+
+        <!-- CTA -->
+        <a
+          href="#contacto"
+          class="inline-flex items-center justify-center rounded-xl bg-[#169061]
+                 px-10 py-4 text-lg font-extrabold text-white transition
+                 hover:bg-[#137e55]"
+        >
+          Hablar con un experto
+        </a>
+
+      </div>
     </div>
   </div>
 </section>

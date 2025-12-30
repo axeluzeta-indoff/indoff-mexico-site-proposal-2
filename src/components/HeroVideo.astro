@@ -1,0 +1,25 @@
+<section id="hero" class="relative h-[40vh] w-full overflow-hidden bg-black">
+  <!-- Video -->
+  <video
+    class="absolute inset-0 h-full w-full object-cover"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster="/videos/hero-poster.jpg"
+  >
+    <source src="/videos/hero.webm" type="video/webm" />
+    <source src="/videos/hero.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Overlay oscuro para legibilidad -->
+  <div class="absolute inset-0 bg-black/40"></div>
+
+  <!-- Contenido encima -->
+  <div class="relative z-10 flex h-full items-center justify-center px-6">
+    <h1 class="text-center text-5xl font-extrabold tracking-tight text-white md:text-7xl">
+      Soluciones en movimiento
+    </h1>
+  </div>
+</section>
