@@ -1,49 +1,143 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-import { BLOG_POSTS } from "../../data/blog";
+import { getAllBlogs, getBlogBySlug } from "../../data/blog/blog.repository";
 
+// Rutas estáticas
 export function getStaticPaths() {
-  return BLOG_POSTS.map((post) => ({
+  return getAllBlogs().map((post) => ({
     params: { slug: post.slug },
     props: { post },
   }));
 }
 
 const { post } = Astro.props;
+
+// Fallback defensivo
+const current =
+  post ?? getBlogBySlug(Astro.params.slug ?? "") ?? getAllBlogs()[0];
 ---
 
-<MainLayout title={post.title} description={post.excerpt} canonical={`/blog/${post.slug}`}>
-  <section class="mx-auto max-w-7xl px-6 py-16">
-    <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
-      <!-- Imagen -->
-      <div class="overflow-hidden rounded-[2.5rem] bg-[#d9d7cf] p-6">
-        <img
-          src={post.image}
-          alt={post.title}
-          class="w-full rounded-4xl object-cover"
-          loading="eager"
-        />
+<MainLayout
+  title={current.title}
+  description={current.excerpt}
+  canonical={`/blog/${current.slug}`}
+>
+  <article class="bg-white text-gray-900">
+    <div class="mx-auto max-w-7xl px-6 py-16">
+
+      <!-- Breadcrumb -->
+      <div class="mb-10 text-sm text-gray-600">
+        <a href="/#blog" class="font-semibold text-[#169061] hover:underline">
+          ← Volver al blog
+        </a>
       </div>
 
-      <!-- Contenido -->
-      <div>
-        <h1 class="text-4xl font-extrabold tracking-tight text-[#169061] md:text-5xl">
-          {post.title}
-        </h1>
+      <div class="grid gap-14 lg:grid-cols-2 lg:items-start">
 
-        <div class="mt-6 space-y-6 text-lg leading-relaxed text-gray-800">
-          {post.content.map((p) => <p>{p}</p>)}
+        <!-- Imagen -->
+        <div class="overflow-hidden rounded-[28px] bg-[#d9d7cf] p-6 shadow-sm ring-1 ring-black/5">
+          <div class="overflow-hidden rounded-[22px] bg-gray-200">
+            <img
+              src={current.image}
+              alt={current.title}
+              class="h-full w-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
         </div>
 
-        <div class="mt-10">
-          <a
-            href="/#blog"
-            class="inline-flex items-center font-extrabold text-[#169061] hover:underline"
-          >
-            ← Volver al blog
-          </a>
+        <!-- Contenido -->
+        <div>
+
+          <!-- Meta -->
+          <div class="mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+            <time datetime={current.publishedAt}>
+              {new Date(current.publishedAt).toLocaleDateString("es-MX", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+
+            <span class="text-gray-400">•</span>
+
+            <div class="inline-flex flex-wrap gap-2">
+              {current.tags.map((tag) => (
+                <span
+                  class="inline-flex items-center rounded-full bg-[#EEC028]/80
+                         px-3 py-1 text-xs font-bold text-gray-900"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <!-- Título -->
+          <h1 class="text-4xl font-extrabold tracking-tight text-[#169061] md:text-5xl">
+            {current.title}
+          </h1>
+
+          <!-- Excerpt -->
+          <p class="mt-6 text-xl font-medium leading-relaxed text-gray-700">
+            {current.excerpt}
+          </p>
+
+          <!-- Body (render tipado, SIN markdown) -->
+          <div class="mt-10 space-y-6 text-lg leading-relaxed text-gray-800">
+
+            {current.content.map((block) => {
+              if (block.type === "paragraph") {
+                return <p>{block.text}</p>;
+              }
+
+              if (block.type === "heading") {
+                return (
+                  <h2 class="mt-10 text-2xl font-extrabold tracking-tight text-[#169061]">
+                    {block.text}
+                  </h2>
+                );
+              }
+
+              if (block.type === "list") {
+                return (
+                  <ul class="list-disc pl-6 space-y-2">
+                    {block.items.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              return null;
+            })}
+
+          </div>
+
+          <!-- CTA -->
+          <div class="mt-14 flex flex-col gap-4 sm:flex-row">
+            <a
+              href="/#contacto"
+              class="inline-flex items-center justify-center rounded-xl
+                     bg-[#169061] px-8 py-4 text-lg font-extrabold text-white
+                     transition hover:bg-[#137e55]"
+            >
+              Hablar con un experto
+            </a>
+
+            <a
+              href="/#blog"
+              class="inline-flex items-center justify-center rounded-xl
+                     bg-[#d9d7cf] px-8 py-4 text-lg font-extrabold text-gray-900
+                     transition hover:opacity-90"
+            >
+              Volver al blog
+            </a>
+          </div>
+
         </div>
       </div>
     </div>
-  </section>
+  </article>
 </MainLayout>

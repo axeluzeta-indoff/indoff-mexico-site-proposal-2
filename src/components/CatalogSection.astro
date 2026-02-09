@@ -1,9 +1,16 @@
+---
+import { ASSETS_BASE_URL } from "../config/assets";
+
+const CATALOGS_BASE = `${ASSETS_BASE_URL}/catalogos`;
+---
+
+
 <section id="catalogo" data-animate="right" class="bg-white text-gray-900">
   <div class="mx-auto max-w-7xl px-6 py-16">
     <div class="grid items-start gap-12 lg:grid-cols-[420px_1fr]">
       <div class="overflow-hidden rounded-xl bg-[#d9d7cf] shadow-sm">
         <img
-          src="/catalogos/catalogo-cover.jpg"
+          src={`${CATALOGS_BASE}/catalogo-cover.webp`}
           alt="Catálogo Indoff Material Handling"
           class="h-full w-full object-cover"
           loading="lazy"
@@ -31,7 +38,7 @@
         </div>
 
         <a
-          href="/catalogos/catalogo-indoff.pdf"
+          href={`${CATALOGS_BASE}/catalogo-indoff.pdf`}
           target="_blank"
           rel="noopener"
           class="inline-flex items-center justify-center rounded-md bg-[#169061] px-10 py-3
@@ -43,4 +50,3 @@
     </div>
   </div>
 </section>
-

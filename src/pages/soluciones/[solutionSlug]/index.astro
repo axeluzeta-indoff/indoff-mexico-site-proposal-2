@@ -3,20 +3,24 @@ import MainLayout from "../../../layouts/MainLayout.astro";
 import ProductCard from "../../../components/ProductCard.astro";
 
 import { SOLUTIONS, getSolutionBySlug } from "../../../data/solutions";
-import { getProductsBySolutionSlug } from "../../../data/solutionsProducts";
+import { getProductsBySolutionSlug } from "../../../data/getProductsBySolution";
 
 // Astro ejecuta esto en build
 export function getStaticPaths() {
-  return SOLUTIONS.map((s) => ({
-    params: { solutionSlug: s.slug },
-    props: { s },
+  return SOLUTIONS.map((solution) => ({
+    params: { solutionSlug: solution.slug },
   }));
 }
 
-const { s } = Astro.props;
+// Params es la única fuente de verdad
+const { solutionSlug } = Astro.params;
 
 // Fallback defensivo
-const current = getSolutionBySlug(s.slug) ?? s;
+const current = getSolutionBySlug(solutionSlug);
+
+if (!current) {
+  throw new Error(`Solución no encontrada: ${solutionSlug}`);
+}
 
 // Hero y texto
 const heroImg = current.heroImg ?? "/images/hero/warehouse-hero.jpg";
@@ -28,7 +32,10 @@ const subtitle =
 const products = getProductsBySolutionSlug(current.slug);
 ---
 
-<MainLayout title={`${current.title} | Indoff México`} description={current.description}>
+<MainLayout
+  title={`${current.title} | Indoff México`}
+  description={current.description}
+>
   <!-- HERO -->
   <section class="relative">
     <div class="h-55 w-full overflow-hidden bg-black">
@@ -84,4 +91,3 @@ const products = getProductsBySolutionSlug(current.slug);
     </div>
   </section>
 </MainLayout>
-

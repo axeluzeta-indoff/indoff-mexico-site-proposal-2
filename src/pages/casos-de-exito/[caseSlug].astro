@@ -1,9 +1,13 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-import { CASES_SUCCESS, getCaseBySlug } from "../../data/casesSuccess";
+import {
+  getAllCases,
+  getCaseBySlug,
+} from "../../data/cases.repository";
 
+// Rutas estáticas
 export function getStaticPaths() {
-  return CASES_SUCCESS.map((c) => ({
+  return getAllCases().map((c) => ({
     params: { caseSlug: c.slug },
     props: { c },
   }));
@@ -11,9 +15,11 @@ export function getStaticPaths() {
 
 const { c } = Astro.props;
 
-// fallback defensivo
+// Fallback defensivo
 const current =
-  c ?? getCaseBySlug(Astro.params.caseSlug ?? "") ?? CASES_SUCCESS[0];
+  c ??
+  getCaseBySlug(Astro.params.caseSlug ?? "") ??
+  getAllCases()[0];
 
 const title = `${current.title} | Casos de éxito`;
 const description = current.summary;
@@ -22,15 +28,20 @@ const description = current.summary;
 <MainLayout title={title} description={description}>
   <section class="bg-white text-gray-900">
     <div class="mx-auto max-w-7xl px-6 py-14">
+
       <!-- Breadcrumb -->
       <div class="mb-8 text-sm text-gray-600">
-        <a href="/#casos-exito" class="font-semibold text-[#169061] hover:underline">
+        <a
+          href="/#casos-exito"
+          class="font-semibold text-[#169061] hover:underline"
+        >
           ← Volver a casos de éxito
         </a>
       </div>
 
       <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
-                <!-- Hero image -->
+
+        <!-- Hero image -->
         <div class="overflow-hidden rounded-[28px] bg-[#d9d7cf] p-6 shadow-sm ring-1 ring-black/5">
           <div class="overflow-hidden rounded-[22px] bg-gray-200">
             <div class="aspect-4/5 w-full">
@@ -46,12 +57,18 @@ const description = current.summary;
           </div>
         </div>
 
-
         <!-- Content -->
         <div>
-          <div class="inline-flex rounded-full bg-[#EEC028] px-3 py-1 text-sm font-bold text-gray-900">
-            {current.tag}
+          <div class="flex flex-wrap gap-2">
+            {current.tags.map((tag) => (
+              <span
+                class="inline-flex rounded-full bg-[#EEC028] px-3 py-1 text-sm font-bold text-gray-900"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
+
 
           <h1 class="mt-4 text-5xl font-extrabold tracking-tight text-[#169061]">
             {current.title}
@@ -62,7 +79,10 @@ const description = current.summary;
           </p>
 
           <div class="mt-8 rounded-[22px] bg-[#d9d7cf] p-6 ring-1 ring-black/5">
-            <p class="text-sm font-extrabold text-gray-900">Resultados clave</p>
+            <p class="text-sm font-extrabold text-gray-900">
+              Resultados clave
+            </p>
+
             <ul class="mt-4 space-y-2 text-gray-800">
               {current.bullets.map((b) => (
                 <li class="flex items-start gap-2">
@@ -97,7 +117,7 @@ const description = current.summary;
         </div>
       </div>
 
-                  <!-- Gallery (swap + modal opcional) -->
+      <!-- Gallery -->
       {current.gallery?.length ? (
         <div class="mt-16">
           <h2 class="text-3xl font-extrabold tracking-tight text-gray-900">
@@ -135,7 +155,6 @@ const description = current.summary;
             class="fixed inset-0 z-999 hidden items-center justify-center bg-black/70 p-6"
             role="dialog"
             aria-modal="true"
-            aria-label="Imagen ampliada"
           >
             <button
               id="galleryClose"
@@ -160,7 +179,6 @@ const description = current.summary;
             (() => {
               const mainImg = document.getElementById("caseMainImg");
               const thumbs = Array.from(document.querySelectorAll("[data-thumb]"));
-
               const modal = document.getElementById("galleryModal");
               const closeBtn = document.getElementById("galleryClose");
               const modalImg = document.getElementById("galleryModalImg");
@@ -168,12 +186,9 @@ const description = current.summary;
 
               if (!mainImg || !thumbs.length) return;
 
-              // Swap tipo Amazon
               const setMain = (src, alt) => {
                 mainImg.src = src;
                 mainImg.alt = alt || "";
-                // cache-bust suave para que el navegador re-renderice sin parpadeos raros
-                mainImg.setAttribute("data-current", src);
               };
 
               thumbs.forEach((btn) => {
@@ -182,13 +197,13 @@ const description = current.summary;
                   const alt = btn.dataset.alt || "";
                   if (src) setMain(src, alt);
 
-                  // marca visual “seleccionado”
-                  thumbs.forEach((b) => b.classList.remove("ring-2", "ring-[#169061]"));
+                  thumbs.forEach((b) =>
+                    b.classList.remove("ring-2", "ring-[#169061]")
+                  );
                   btn.classList.add("ring-2", "ring-[#169061]");
                 });
               });
 
-              // Modal al click del hero (opcional, estilo zoom)
               if (modal && closeBtn && modalImg && modalAlt) {
                 const openModal = () => {
                   modalImg.src = mainImg.src;
@@ -203,7 +218,6 @@ const description = current.summary;
                   modal.classList.add("hidden");
                   modal.classList.remove("flex");
                   modalImg.src = "";
-                  modalImg.alt = "";
                   modalAlt.textContent = "";
                   document.body.style.overflow = "";
                 };
@@ -216,7 +230,9 @@ const description = current.summary;
                 });
 
                 window.addEventListener("keydown", (e) => {
-                  if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
+                  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+                    closeModal();
+                  }
                 });
               }
             })();

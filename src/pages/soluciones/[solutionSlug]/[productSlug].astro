@@ -6,7 +6,8 @@ import {
   getAllProductPaths,
   getProductBySlugs,
   getProductsBySolutionSlug,
-} from "../../../data/solutionsProducts";
+} from "../../../data/products";
+
 import { getSolutionBySlug } from "../../../data/solutions";
 
 // requerido por Astro para rutas dinámicas
@@ -19,27 +20,31 @@ const { solutionSlug, productSlug } = Astro.params;
 const solution = getSolutionBySlug(solutionSlug);
 const product = getProductBySlugs(solutionSlug, productSlug);
 
-// productos hermanos (misma categoría)
+// productos hermanos (misma solución)
 const siblings = getProductsBySolutionSlug(solutionSlug);
 ---
 
 <MainLayout
-  title={`${product?.title ?? "Producto"} | Indoff México`}
+  title={`${product ? product.title : "Producto"} | Indoff México`}
   description={
-    product?.description?.slice(0, 160) ??
-    solution?.description ??
-    "Producto"
+    product?.description
+      ? product.description.slice(0, 160)
+      : solution?.description ?? "Producto"
   }
 >
   <section class="bg-white text-gray-900">
     <div class="mx-auto max-w-7xl px-6 py-12">
+
       <!-- Breadcrumb -->
       <p class="text-sm font-semibold text-gray-600">
-        Soluciones / {solutionSlug} / {productSlug}
+        Soluciones /
+        {solution?.title ?? solutionSlug} /
+        {product?.title ?? productSlug}
       </p>
 
       <div class="mt-6 grid gap-10 lg:grid-cols-2 lg:items-start">
-        <!-- LEFT: imagen grande + lista -->
+
+        <!-- LEFT -->
         <div>
           <!-- Imagen principal -->
           <div class="overflow-hidden rounded-[28px] bg-gray-200">
@@ -64,19 +69,21 @@ const siblings = getProductsBySolutionSlug(solutionSlug);
                   <li>
                     <a
                       href={`/soluciones/${solutionSlug}/${p.slug}`}
-                      class={`block text-center text-2xl font-extrabold transition ${
-                        isActive
+                      class={
+                        "block text-center text-2xl font-extrabold transition " +
+                        (isActive
                           ? "text-[#169061]"
-                          : "text-gray-900 hover:text-[#169061]"
-                      }`}
+                          : "text-gray-900 hover:text-[#169061]")
+                      }
                     >
                       {p.title}
                       <div
-                        class={`mx-auto mt-3 h-0.5 w-72 ${
-                          isActive
+                        class={
+                          "mx-auto mt-3 h-0.5 w-72 " +
+                          (isActive
                             ? "bg-[#169061]"
-                            : "bg-[#169061]/50"
-                        }`}
+                            : "bg-[#169061]/50")
+                        }
                       />
                     </a>
                   </li>
@@ -86,7 +93,7 @@ const siblings = getProductsBySolutionSlug(solutionSlug);
           </nav>
         </div>
 
-        <!-- RIGHT: titulo + descripción + galería + CTA -->
+        <!-- RIGHT -->
         <div>
           <h1 class="text-5xl font-extrabold tracking-tight text-[#169061]">
             {product?.title ?? "Producto"}
@@ -100,7 +107,6 @@ const siblings = getProductsBySolutionSlug(solutionSlug);
               ))}
           </div>
 
-          <!-- GALERÍA debajo de la descripción -->
           {product && (
             <ProductGallery
               title={product.title}
@@ -122,6 +128,7 @@ const siblings = getProductsBySolutionSlug(solutionSlug);
             </a>
           </div>
         </div>
+
       </div>
     </div>
   </section>
