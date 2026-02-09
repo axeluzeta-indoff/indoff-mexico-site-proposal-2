@@ -1,0 +1,29 @@
+RewriteEngine On
+RewriteBase /
+
+# 1) Forzar HTTPS
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 2) Forzar dominio sin www
+RewriteCond %{HTTP_HOST} ^www\.indoffmexico\.com$ [NC]
+RewriteRule ^(.*)$ https://indoffmexico.com/$1 [L,R=301]
+
+# 3) Permitir robots y sitemap sin tocar
+RewriteRule ^(robots\.txt|sitemap\.xml)$ - [L]
+
+# 4) Legacy / basura → home
+RewriteCond %{THE_REQUEST} \s/(index|default)\.php[\s?] [NC]
+RewriteRule ^(?:index|default)\.php$ / [R=301,L]
+RedirectMatch 301 ^/cgi-bin/.*$ /
+
+# 5) Si el recurso existe, sírvelo normal
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 6) Fallback SPA (Astro static)
+RewriteRule ^ index.html [L]
+
+# 7) MIME correcto para XML
+AddType application/xml .xml
