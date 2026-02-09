@@ -5,7 +5,6 @@ import {
   getCaseBySlug,
 } from "../../data/cases.repository";
 
-// Rutas estáticas
 export function getStaticPaths() {
   return getAllCases().map((c) => ({
     params: { caseSlug: c.slug },
@@ -15,7 +14,6 @@ export function getStaticPaths() {
 
 const { c } = Astro.props;
 
-// Fallback defensivo
 const current =
   c ??
   getCaseBySlug(Astro.params.caseSlug ?? "") ??
@@ -29,48 +27,74 @@ const description = current.summary;
   <section class="bg-white text-gray-900">
     <div class="mx-auto max-w-7xl px-6 py-14">
 
-      <!-- Breadcrumb -->
       <div class="mb-8 text-sm text-gray-600">
-        <a
-          href="/#casos-exito"
-          class="font-semibold text-[#169061] hover:underline"
-        >
-          ← Volver a casos de éxito
-        </a>
+        <p class="font-medium text-gray-500">
+          Casos de éxito / <span class="text-gray-900">{current.title}</span>
+        </p>
       </div>
 
       <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
 
-        <!-- Hero image -->
-        <div class="overflow-hidden rounded-[28px] bg-[#d9d7cf] p-6 shadow-sm ring-1 ring-black/5">
-          <div class="overflow-hidden rounded-[22px] bg-gray-200">
-            <div class="aspect-4/5 w-full">
-              <img
-                id="caseMainImg"
-                src={current.heroImage}
-                alt={current.heroAlt}
-                class="h-full w-full cursor-zoom-in object-cover"
-                loading="eager"
-                fetchpriority="high"
-              />
+        <div class="space-y-4">
+          <div class="overflow-hidden rounded-[28px] bg-[#d9d7cf] p-4 shadow-sm ring-1 ring-black/5">
+            <div class="overflow-hidden rounded-[22px] bg-gray-200">
+              <div class="aspect-4/3 md:aspect-square w-full relative group">
+                <img
+                  id="caseMainImg"
+                  src={current.heroImage}
+                  alt={current.heroAlt}
+                  class="h-full w-full cursor-zoom-in object-cover transition-all duration-300"
+                  loading="eager"
+                  fetchpriority="high"
+                />
+                <div class="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                   <span class="bg-white/90 p-3 rounded-full shadow-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#169061]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                   </span>
+                </div>
+              </div>
             </div>
           </div>
+
+          {current.gallery?.length ? (
+            <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              <button
+                type="button"
+                class="min-w-20 h-20 shrink-0 overflow-hidden rounded-xl border-2 border-[#169061] bg-gray-200 transition-all"
+                data-thumb
+                data-src={current.heroImage}
+                data-alt={current.heroAlt}
+              >
+                <img src={current.heroImage} alt="" class="h-full w-full object-cover" />
+              </button>
+
+              {current.gallery.map((g, idx) => (
+                <button
+                  type="button"
+                  class="min-w-20 h-20 shrink-0 overflow-hidden rounded-xl border-2 border-transparent bg-gray-200 transition-all hover:border-gray-300"
+                  data-thumb
+                  data-src={g.src}
+                  data-alt={g.alt}
+                >
+                  <img src={g.src} alt={g.alt} class="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
 
-        <!-- Content -->
-        <div>
+        <div class="flex flex-col">
           <div class="flex flex-wrap gap-2">
             {current.tags.map((tag) => (
-              <span
-                class="inline-flex rounded-full bg-[#EEC028] px-3 py-1 text-sm font-bold text-gray-900"
-              >
+              <span class="inline-flex rounded-full bg-[#EEC028] px-3 py-1 text-sm font-bold text-gray-900">
                 {tag}
               </span>
             ))}
           </div>
 
-
-          <h1 class="mt-4 text-5xl font-extrabold tracking-tight text-[#169061]">
+          <h1 class="mt-4 text-4xl md:text-5xl font-extrabold tracking-tight text-[#169061]">
             {current.title}
           </h1>
 
@@ -79,15 +103,14 @@ const description = current.summary;
           </p>
 
           <div class="mt-8 rounded-[22px] bg-[#d9d7cf] p-6 ring-1 ring-black/5">
-            <p class="text-sm font-extrabold text-gray-900">
+            <p class="text-sm font-extrabold text-gray-900 uppercase tracking-wider">
               Resultados clave
             </p>
-
-            <ul class="mt-4 space-y-2 text-gray-800">
+            <ul class="mt-4 space-y-3 text-gray-800">
               {current.bullets.map((b) => (
-                <li class="flex items-start gap-2">
-                  <span class="mt-2 h-2 w-2 rounded-full bg-[#169061]"></span>
-                  <span>{b}</span>
+                <li class="flex items-start gap-3">
+                  <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#169061]"></span>
+                  <span class="text-base font-medium">{b}</span>
                 </li>
               ))}
             </ul>
@@ -99,146 +122,78 @@ const description = current.summary;
             ))}
           </div>
 
-          <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-10 flex flex-col gap-4 sm:flex-row">
             <a
-              href="/#contacto"
-              class="inline-flex items-center justify-center rounded-xl bg-[#169061] px-8 py-4 text-lg font-extrabold text-white transition hover:bg-[#137e55]"
+              href="/#casos-exito"
+              class="group flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#d9d7cf] px-8 py-4 text-lg font-extrabold text-gray-900 transition hover:bg-[#ceccbf]"
             >
-              Hablar con un experto
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Otros casos
             </a>
 
-            <a
-              href="/#catalogo"
-              class="inline-flex items-center justify-center rounded-xl bg-[#d9d7cf] px-8 py-4 text-lg font-extrabold text-gray-900 transition hover:opacity-90"
-            >
-              Descargar catálogo
+            <a href="/#contacto" class="flex-1 inline-flex items-center justify-center rounded-xl bg-[#169061] px-8 py-4 text-lg font-extrabold text-white transition hover:bg-[#137e55]">
+              Hablar con un experto
             </a>
           </div>
         </div>
       </div>
-
-      <!-- Gallery -->
-      {current.gallery?.length ? (
-        <div class="mt-16">
-          <h2 class="text-3xl font-extrabold tracking-tight text-gray-900">
-            Galería
-          </h2>
-
-          <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {current.gallery.map((g, idx) => (
-              <button
-                type="button"
-                class="group relative overflow-hidden rounded-[22px] bg-gray-200 ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-[#169061]"
-                data-thumb
-                data-src={g.src}
-                data-alt={g.alt}
-                aria-label={`Ver imagen ${idx + 1}`}
-              >
-                <div class="aspect-4/3 w-full">
-                  <img
-                    src={g.src}
-                    alt={g.alt}
-                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    draggable="false"
-                  />
-                </div>
-
-                <div class="pointer-events-none absolute inset-0 bg-black/0 transition group-hover:bg-black/15"></div>
-              </button>
-            ))}
-          </div>
-
-          <!-- Modal -->
-          <div
-            id="galleryModal"
-            class="fixed inset-0 z-999 hidden items-center justify-center bg-black/70 p-6"
-            role="dialog"
-            aria-modal="true"
-          >
-            <button
-              id="galleryClose"
-              type="button"
-              class="absolute right-6 top-6 rounded-full bg-white/90 px-4 py-2 text-sm font-extrabold text-gray-900 hover:bg-white"
-            >
-              Cerrar ✕
-            </button>
-
-            <div class="w-full max-w-5xl">
-              <img
-                id="galleryModalImg"
-                src=""
-                alt=""
-                class="mx-auto max-h-[80vh] w-auto max-w-full rounded-[22px] bg-white object-contain shadow-2xl"
-              />
-              <p id="galleryModalAlt" class="mt-4 text-center text-white/90"></p>
-            </div>
-          </div>
-
-          <script is:inline>
-            (() => {
-              const mainImg = document.getElementById("caseMainImg");
-              const thumbs = Array.from(document.querySelectorAll("[data-thumb]"));
-              const modal = document.getElementById("galleryModal");
-              const closeBtn = document.getElementById("galleryClose");
-              const modalImg = document.getElementById("galleryModalImg");
-              const modalAlt = document.getElementById("galleryModalAlt");
-
-              if (!mainImg || !thumbs.length) return;
-
-              const setMain = (src, alt) => {
-                mainImg.src = src;
-                mainImg.alt = alt || "";
-              };
-
-              thumbs.forEach((btn) => {
-                btn.addEventListener("click", () => {
-                  const src = btn.dataset.src;
-                  const alt = btn.dataset.alt || "";
-                  if (src) setMain(src, alt);
-
-                  thumbs.forEach((b) =>
-                    b.classList.remove("ring-2", "ring-[#169061]")
-                  );
-                  btn.classList.add("ring-2", "ring-[#169061]");
-                });
-              });
-
-              if (modal && closeBtn && modalImg && modalAlt) {
-                const openModal = () => {
-                  modalImg.src = mainImg.src;
-                  modalImg.alt = mainImg.alt || "";
-                  modalAlt.textContent = mainImg.alt || "";
-                  modal.classList.remove("hidden");
-                  modal.classList.add("flex");
-                  document.body.style.overflow = "hidden";
-                };
-
-                const closeModal = () => {
-                  modal.classList.add("hidden");
-                  modal.classList.remove("flex");
-                  modalImg.src = "";
-                  modalAlt.textContent = "";
-                  document.body.style.overflow = "";
-                };
-
-                mainImg.addEventListener("click", openModal);
-                closeBtn.addEventListener("click", closeModal);
-
-                modal.addEventListener("click", (e) => {
-                  if (e.target === modal) closeModal();
-                });
-
-                window.addEventListener("keydown", (e) => {
-                  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-                    closeModal();
-                  }
-                });
-              }
-            })();
-          </script>
-        </div>
-      ) : null}
     </div>
   </section>
+
+  <div id="galleryModal" class="fixed inset-0 z-100 hidden items-center justify-center bg-black/90 p-4 backdrop-blur-sm" role="dialog">
+    <button id="galleryClose" class="absolute right-6 top-6 text-white text-5xl font-light hover:text-[#EEC028] transition">&times;</button>
+    <div class="w-full max-w-5xl">
+      <img id="galleryModalImg" src="" alt="" class="mx-auto max-h-[85vh] rounded-lg shadow-2xl object-contain" />
+    </div>
+  </div>
 </MainLayout>
+
+<script is:inline>
+  (() => {
+    const mainImg = document.getElementById("caseMainImg");
+    const thumbs = document.querySelectorAll("[data-thumb]");
+    const modal = document.getElementById("galleryModal");
+    const closeBtn = document.getElementById("galleryClose");
+    const modalImg = document.getElementById("galleryModalImg");
+
+    if (!mainImg) return;
+
+    thumbs.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const src = btn.dataset.src;
+        const alt = btn.dataset.alt || "";
+        
+        mainImg.style.opacity = "0.3";
+        setTimeout(() => {
+          mainImg.src = src;
+          mainImg.alt = alt;
+          mainImg.style.opacity = "1";
+        }, 150);
+
+        thumbs.forEach((b) => b.classList.replace("border-[#169061]", "border-transparent"));
+        btn.classList.replace("border-transparent", "border-[#169061]");
+      });
+    });
+
+    mainImg.addEventListener("click", () => {
+      modalImg.src = mainImg.src;
+      modal.classList.replace("hidden", "flex");
+      document.body.style.overflow = "hidden";
+    });
+
+    const closeModal = () => {
+      modal.classList.replace("flex", "hidden");
+      document.body.style.overflow = "";
+    };
+
+    closeBtn?.addEventListener("click", closeModal);
+    modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  })();
+</script>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

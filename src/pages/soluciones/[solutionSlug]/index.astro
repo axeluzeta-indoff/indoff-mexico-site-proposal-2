@@ -5,30 +5,25 @@ import ProductCard from "../../../components/ProductCard.astro";
 import { SOLUTIONS, getSolutionBySlug } from "../../../data/solutions";
 import { getProductsBySolutionSlug } from "../../../data/getProductsBySolution";
 
-// Astro ejecuta esto en build
 export function getStaticPaths() {
   return SOLUTIONS.map((solution) => ({
     params: { solutionSlug: solution.slug },
   }));
 }
 
-// Params es la única fuente de verdad
 const { solutionSlug } = Astro.params;
 
-// Fallback defensivo
 const current = getSolutionBySlug(solutionSlug);
 
 if (!current) {
   throw new Error(`Solución no encontrada: ${solutionSlug}`);
 }
 
-// Hero y texto
 const heroImg = current.heroImg ?? "/images/hero/warehouse-hero.jpg";
 const subtitle =
   current.subtitle ??
   "Agiliza tu producción, con un sistema de almacenamiento más productivo, ahorra y aprovecha todo el espacio.";
 
-// Productos por solución
 const products = getProductsBySolutionSlug(current.slug);
 ---
 
@@ -36,9 +31,8 @@ const products = getProductsBySolutionSlug(current.slug);
   title={`${current.title} | Indoff México`}
   description={current.description}
 >
-  <!-- HERO -->
   <section class="relative">
-    <div class="h-55 w-full overflow-hidden bg-black">
+    <div class="h-64 w-full overflow-hidden bg-black md:h-80">
       <img
         src={heroImg}
         alt={`Solución de ${current.title}`}
@@ -48,22 +42,21 @@ const products = getProductsBySolutionSlug(current.slug);
     </div>
 
     <div class="absolute inset-0 grid place-items-center px-6">
-      <h1 class="text-center text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+      <h1 class="text-center text-4xl font-extrabold tracking-tight text-white md:text-6xl">
         {current.title}
       </h1>
     </div>
   </section>
 
-  <!-- CONTENIDO -->
   <section class="bg-white text-gray-900">
     <div class="mx-auto max-w-7xl px-6 py-16">
-      <p class="mx-auto max-w-3xl text-center text-xl font-semibold leading-relaxed text-gray-900">
+      
+      <p class="mx-auto max-w-3xl text-center text-xl font-semibold leading-relaxed text-gray-900 md:text-2xl">
         {subtitle}
       </p>
 
-      <!-- PRODUCTOS -->
       {products.length > 0 ? (
-        <div class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div class="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {products.map((p) => (
             <ProductCard
               title={p.title}
@@ -74,18 +67,33 @@ const products = getProductsBySolutionSlug(current.slug);
           ))}
         </div>
       ) : (
-        <p class="mt-14 text-center text-lg font-semibold text-gray-700">
-          Próximamente.
-        </p>
+        <div class="mt-20 text-center">
+            <p class="text-xl font-bold text-gray-400">Próximamente más productos.</p>
+        </div>
       )}
 
-      <!-- CTA -->
-      <div class="mt-16 flex justify-center">
+      <div class="mt-20 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="/#soluciones"
+          class="group inline-flex min-w-64 items-center justify-center gap-2 rounded-md bg-[#d9d7cf] px-10 py-4 text-lg font-extrabold text-gray-900 transition hover:bg-[#ceccbf]"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            class="h-5 w-5 transition-transform group-hover:-translate-x-1" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Ver otras soluciones
+        </a>
+
         <a
           href="/#contacto"
-          class="inline-flex min-w-70 items-center justify-center rounded-md bg-[#169061] px-10 py-3 text-lg font-extrabold text-white transition hover:bg-[#137e55]"
+          class="inline-flex min-w-64 items-center justify-center rounded-md bg-[#169061] px-10 py-4 text-lg font-extrabold text-white transition hover:bg-[#137e55] shadow-lg"
         >
-          Cotizar
+          Cotizar proyecto
         </a>
       </div>
     </div>

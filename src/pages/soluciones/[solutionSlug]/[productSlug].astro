@@ -10,7 +10,6 @@ import {
 
 import { getSolutionBySlug } from "../../../data/solutions";
 
-// requerido por Astro para rutas dinámicas
 export function getStaticPaths() {
   return getAllProductPaths();
 }
@@ -19,72 +18,76 @@ const { solutionSlug, productSlug } = Astro.params;
 
 const solution = getSolutionBySlug(solutionSlug);
 const product = getProductBySlugs(solutionSlug, productSlug);
-
-// productos hermanos (misma solución)
 const siblings = getProductsBySolutionSlug(solutionSlug);
+
+const title = `${product ? product.title : "Producto"} | Indoff México`;
 ---
 
 <MainLayout
-  title={`${product ? product.title : "Producto"} | Indoff México`}
-  description={
-    product?.description
-      ? product.description.slice(0, 160)
-      : solution?.description ?? "Producto"
-  }
+  title={title}
+  description={product?.description ? product.description.slice(0, 160) : "Producto"}
 >
   <section class="bg-white text-gray-900">
     <div class="mx-auto max-w-7xl px-6 py-12">
 
-      <!-- Breadcrumb -->
-      <p class="text-sm font-semibold text-gray-600">
-        Soluciones /
-        {solution?.title ?? solutionSlug} /
-        {product?.title ?? productSlug}
-      </p>
+      <div class="mb-8 flex flex-col gap-4">
+        <a
+          href="/#soluciones"
+          class="group inline-flex items-center gap-2 font-semibold text-[#169061] hover:underline"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            class="h-4 w-4 transition-transform group-hover:-translate-x-1" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver a soluciones
+        </a>
+
+        <p class="text-sm font-medium text-gray-500">
+          Soluciones / {solution?.title ?? solutionSlug} / <span class="text-gray-900">{product?.title ?? productSlug}</span>
+        </p>
+      </div>
 
       <div class="mt-6 grid gap-10 lg:grid-cols-2 lg:items-start">
 
-        <!-- LEFT -->
         <div>
-          <!-- Imagen principal -->
-          <div class="overflow-hidden rounded-[28px] bg-gray-200">
-            <div class="aspect-4/3 w-full">
-              <img
-                id="product-main"
-                src={product?.img ?? "/images/hero/warehouse-hero.jpg"}
-                alt={product?.imgAlt ?? "Producto"}
-                class="h-full w-full object-cover"
-                loading="eager"
-              />
+          <div class="overflow-hidden rounded-[28px] bg-gray-200 shadow-sm ring-1 ring-black/5 p-2">
+            <div class="overflow-hidden rounded-[22px]">
+              <div class="aspect-4/3 w-full relative group">
+                <img
+                  id="product-main"
+                  src={product?.img ?? "/images/hero/warehouse-hero.jpg"}
+                  alt={product?.imgAlt ?? "Producto"}
+                  class="h-full w-full object-cover cursor-zoom-in transition-opacity duration-300"
+                  loading="eager"
+                />
+                <div class="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                   <span class="bg-white/90 p-2 rounded-full shadow-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#169061]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                   </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Lista de otros productos -->
           <nav class="mt-10">
             <ul class="space-y-4">
               {siblings.map((p) => {
                 const isActive = p.slug === productSlug;
-
                 return (
                   <li>
                     <a
                       href={`/soluciones/${solutionSlug}/${p.slug}`}
-                      class={
-                        "block text-center text-2xl font-extrabold transition " +
-                        (isActive
-                          ? "text-[#169061]"
-                          : "text-gray-900 hover:text-[#169061]")
-                      }
+                      class={"block text-center text-2xl font-extrabold transition " + (isActive ? "text-[#169061]" : "text-gray-900 hover:text-[#169061]")}
                     >
                       {p.title}
-                      <div
-                        class={
-                          "mx-auto mt-3 h-0.5 w-72 " +
-                          (isActive
-                            ? "bg-[#169061]"
-                            : "bg-[#169061]/50")
-                        }
-                      />
+                      <div class={"mx-auto mt-3 h-0.5 w-72 " + (isActive ? "bg-[#169061]" : "bg-[#169061]/50")} />
                     </a>
                   </li>
                 );
@@ -93,7 +96,6 @@ const siblings = getProductsBySolutionSlug(solutionSlug);
           </nav>
         </div>
 
-        <!-- RIGHT -->
         <div>
           <h1 class="text-5xl font-extrabold tracking-tight text-[#169061]">
             {product?.title ?? "Producto"}
@@ -108,28 +110,80 @@ const siblings = getProductsBySolutionSlug(solutionSlug);
           </div>
 
           {product && (
-            <ProductGallery
-              title={product.title}
-              coverSrc={product.img}
-              coverAlt={product.imgAlt ?? product.title}
-              gallery={product.gallery ?? []}
-              mode="thumbsOnly"
-              mainImgId="product-main"
-            />
+            <div class="mt-8">
+               <ProductGallery
+                title={product.title}
+                coverSrc={product.img}
+                coverAlt={product.imgAlt ?? product.title}
+                gallery={product.gallery ?? []}
+                mode="thumbsOnly"
+                mainImgId="product-main"
+              />
+            </div>
           )}
 
-          <!-- CTA -->
           <div class="mt-10 flex justify-center lg:justify-start">
             <a
               href="/#contacto"
               class="inline-flex min-w-80 items-center justify-center rounded-md bg-[#169061] px-10 py-4 text-xl font-extrabold text-white transition hover:bg-[#137e55]"
             >
-              Cotizar
+              Cotizar ahora
             </a>
           </div>
         </div>
-
       </div>
     </div>
   </section>
+
+  <div id="product-modal" class="fixed inset-0 z-100 hidden items-center justify-center bg-black/90 p-4 backdrop-blur-sm" role="dialog">
+    <button id="modal-close" class="absolute right-6 top-6 text-white text-5xl font-light hover:text-[#EEC028] transition-colors">&times;</button>
+    <div class="w-full max-w-5xl">
+      <img id="modal-img" src="" alt="" class="mx-auto max-h-[85vh] rounded-lg shadow-2xl object-contain" />
+    </div>
+  </div>
 </MainLayout>
+
+<script is:inline>
+  (() => {
+    const mainImg = document.getElementById("product-main");
+    const modal = document.getElementById("product-modal");
+    const modalImg = document.getElementById("modal-img");
+    const closeBtn = document.getElementById("modal-close");
+
+    if (!mainImg) return;
+
+    // 1. Animación suave al cambiar imagen
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "src") {
+          mainImg.style.opacity = "0.3";
+          setTimeout(() => {
+            mainImg.style.opacity = "1";
+          }, 150);
+        }
+      });
+    });
+
+    observer.observe(mainImg, { attributes: true });
+
+    // 2. Lógica del Lightbox
+    mainImg.addEventListener("click", () => {
+      modalImg.src = mainImg.src;
+      modalImg.alt = mainImg.alt;
+      modal.classList.replace("hidden", "flex");
+      document.body.style.overflow = "hidden";
+    });
+
+    const closeModal = () => {
+      modal.classList.replace("flex", "hidden");
+      document.body.style.overflow = "";
+    };
+
+    closeBtn?.addEventListener("click", closeModal);
+    modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
+    });
+  })();
+</script>
