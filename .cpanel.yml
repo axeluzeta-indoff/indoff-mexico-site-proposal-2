@@ -1,18 +1,6 @@
 deployment:
   tasks:
     - /bin/echo "→ Deploying Indoff México (Astro dist → public_html)"
-
-    # Copiar dist al document root
-    # --delete limpia archivos viejos
-    # Excluimos uploads y .well-known por seguridad
-    - /bin/rsync -av --delete \
-        --exclude='/uploads/' \
-        --filter='P uploads/' \
-        --exclude='/.well-known/' \
-        --filter='P .well-known/' \
-        ./dist/ /home/indoff7/public_html/
-
-    # Asegurar .htaccess si viene del build
-    - /bin/bash -lc '[ -f ./dist/.htaccess ] && cp -f ./dist/.htaccess /home/indoff7/public_html/.htaccess || true'
-
-    - /bin/echo "✓ Deploy finished successfully"
+    - /bin/rsync -a --delete --exclude='/uploads/' --filter='P uploads/' --exclude='/.well-known/' --filter='P .well-known/' /home/indoff7/indoffmexico_front/dist/ /home/indoff7/public_html/
+    - /bin/cp -f /home/indoff7/indoffmexico_front/deploy/.htaccess /home/indoff7/public_html/.htaccess
+    - /bin/bash -lc '[ -L /home/indoff7/public_html/uploads ] || ln -s ../uploads_mexico /home/indoff7/public_html/uploads'
