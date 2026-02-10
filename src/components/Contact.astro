@@ -119,45 +119,48 @@ const mapSrc =
           Envíanos un mensaje
         </h3>
 
-        <form class="space-y-5">
+        <form id="my-form" action="https://formspree.io/f/xkovoold" method="POST" class="space-y-5">
           <div>
             <label class="mb-2 block text-sm font-bold">Nombre completo *</label>
-            <input type="text" required placeholder="Juan Pérez"
+            <input name="nombre" type="text" required placeholder="Juan Pérez"
               class="w-full rounded-lg border-2 border-gray-200 px-4 py-3 focus:border-[#169061] outline-none" />
           </div>
 
           <div class="grid gap-5 sm:grid-cols-2">
             <div>
               <label class="mb-2 block text-sm font-bold">Email *</label>
-              <input type="email" required placeholder="juan@empresa.com"
+              <input name="email" type="email" required placeholder="juan@empresa.com"
                 class="w-full rounded-lg border-2 border-gray-200 px-4 py-3 focus:border-[#169061] outline-none" />
             </div>
 
             <div>
               <label class="mb-2 block text-sm font-bold">Teléfono *</label>
-              <input type="tel" required placeholder="(664) 123 4567"
+              <input name="telefono" type="tel" required placeholder="(664) 123 4567"
                 class="w-full rounded-lg border-2 border-gray-200 px-4 py-3 focus:border-[#169061] outline-none" />
             </div>
           </div>
 
           <div>
             <label class="mb-2 block text-sm font-bold">Empresa</label>
-            <input type="text" placeholder="Nombre de tu empresa"
+            <input name="empresa" type="text" placeholder="Nombre de tu empresa"
               class="w-full rounded-lg border-2 border-gray-200 px-4 py-3 focus:border-[#169061] outline-none" />
           </div>
 
           <div>
             <label class="mb-2 block text-sm font-bold">Cuéntanos sobre tu proyecto *</label>
-            <textarea rows="4" required
+            <textarea name="mensaje" rows="4" required
               class="w-full rounded-lg border-2 border-gray-200 px-4 py-3 focus:border-[#169061] outline-none"></textarea>
           </div>
 
           <button
+            id="submit-button"
             type="submit"
             class="w-full rounded-lg bg-[#169061] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#137e55]"
           >
             Enviar mensaje
           </button>
+
+          <p id="status" class="text-center font-bold mt-4"></p>
         </form>
          <!-- Redes (igual al tuyo) -->
         <div class="mt-10 text-center">
@@ -239,3 +242,55 @@ const mapSrc =
   </div>
 </section>
 
+<script>
+  // 1. REEMPLAZA ESTO: Pon aquí el ID que te dio Formspree (ejemplo: "xanypogq")
+  const FORM_ID = "xkovoold"; 
+
+  // 2. Selección de elementos con aserción de tipos para evitar errores de TS
+  const form = document.getElementById("my-form") as HTMLFormElement | null;
+  const status = document.getElementById("status") as HTMLElement | null;
+  const button = document.getElementById("submit-button") as HTMLButtonElement | null;
+
+  // 3. Verificamos que todo exista antes de agregar el listener
+  if (form && button && status) {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      
+      // Aseguramos que currentTarget es el formulario
+      const data = new FormData(event.currentTarget as HTMLFormElement);
+      
+      // Estado de carga
+      button.disabled = true;
+      button.innerText = "Enviando...";
+      status.innerText = ""; // Limpiamos mensajes previos
+
+      try {
+        const response = await fetch(`https://formspree.io/f/${FORM_ID}`, {
+          method: "POST",
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          status.innerText = "¡Gracias! Tu mensaje ha sido enviado con éxito.";
+          status.className = "text-center font-bold mt-4 text-[#169061] animate-bounce"; 
+          
+          form.reset(); // Limpia los campos
+        } else {
+          // Error del servidor (ej. captcha o límite de envíos)
+          const errorData = await response.json();
+          status.innerText = errorData.errors ? errorData.errors[0].message : "Hubo un error al enviar.";
+          status.className = "text-center font-bold mt-4 text-red-200";
+        }
+      } catch (error) {
+        // Error de red
+        status.innerText = "Error de conexión. Revisa tu internet.";
+        status.className = "text-center font-bold mt-4 text-red-200";
+      } finally {
+        // Restaurar botón
+        button.disabled = false;
+        button.innerText = "Enviar mensaje";
+      }
+    });
+  }
+</script>
